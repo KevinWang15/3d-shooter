@@ -6,6 +6,7 @@ let mtlLoader = new MTLLoader();
 let modelsSrc = [
   { name: "tree", path: "models/tree.obj", mtl: "models/tree.mtl", mesh: null, type: "obj" },
   { name: "male", path: "models/male.json", mesh: null, type: "json" },
+  { name: "ak", path: "models/ak.json", mesh: null, type: "json" },
 ];
 let models = {};
 export function load(loadingManager) {
