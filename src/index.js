@@ -5,14 +5,7 @@ import "./index.css";
 let scene = new three.Scene();
 let camera = new three.PerspectiveCamera(90, 1000 / 800, 0.1, 100);
 camera.position.y += 0.2;
-let box = new three.Mesh(
-  new three.BoxGeometry(0.5, 0.5, 0.5),
-  new three.MeshBasicMaterial({ color: 'blue' }),
-);
 let clock = new three.Clock();
-box.position.set(0, 0, 5);
-camera.lookAt(box.position);
-scene.add(box);
 let loadingManager = new three.LoadingManager();
 let meshes = {};
 let renderer = new three.WebGLRenderer();
@@ -28,16 +21,25 @@ loadingManager.onLoad = function () {
   light.shadow.camera.far = 25;
   scene.add(light);
 
+  let meshFloor = new three.Mesh(
+    new three.PlaneGeometry(20, 20, 10, 10),
+    new three.MeshPhongMaterial({ color: 0xffffff }),
+  );
+  meshFloor.rotation.x -= Math.PI / 2;
+  meshFloor.receiveShadow = true;
+  scene.add(meshFloor);
+
   meshes['tree1'] = models.models.tree.mesh.clone();
   meshes['tree2'] = models.models.tree.mesh.clone();
   meshes['tree3'] = models.models.tree.mesh.clone();
-  meshes['tree1'].position.set(-1, 0, 5);
-  meshes['tree2'].position.set(-2, 0, 5);
-  meshes['tree3'].position.set(-3, 0, 5);
+  meshes['tree1'].position.set(0, 0, 5);
+  meshes['tree2'].position.set(5, 0, 8);
+  meshes['tree3'].position.set(-5, 0, 8);
   meshes['tree3'].rotation.set(0, Math.PI / 2.2, 0);
   scene.add(meshes["tree1"]);
   scene.add(meshes["tree2"]);
   scene.add(meshes["tree3"]);
+  camera.lookAt(meshes["tree1"].position);
 
   renderer.setSize(1000, 800);
   renderer.shadowMap.enabled = true;
