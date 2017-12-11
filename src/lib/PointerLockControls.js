@@ -11,7 +11,7 @@ export default function PointerLockControls ( camera ) {
   let pitchObject = new THREE.Object3D();
   pitchObject.add( camera );
   let yawObject = new THREE.Object3D();
-  yawObject.position.y = 10;
+  yawObject.position.y = 2;
   yawObject.add( pitchObject );
 
   let PI_2 = Math.PI / 2;
@@ -20,7 +20,6 @@ export default function PointerLockControls ( camera ) {
     if ( scope.enabled === false ) return;
     let movementX = event.movementX || event.mozMovementX || event.webkitMovementX || 0;
     let movementY = event.movementY || event.mozMovementY || event.webkitMovementY || 0;
-    console.log(movementY);
 
     yawObject.rotation.y -= movementX * 0.002;
     pitchObject.rotation.x += movementY * 0.002;
