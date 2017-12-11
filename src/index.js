@@ -7,6 +7,9 @@ let keydown = {};
 let speed = { x: 0.1, y: 0 };
 let inertia = { x: 0, z: 0 };
 let isJumping = false;
+let isShooting = false;
+let hasBullet = false;
+let bullets = [];
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75, 1000 / 800, 0.1, 100);
 let loadingManager = new THREE.LoadingManager();
@@ -40,6 +43,13 @@ document.addEventListener('keyup', (e) => {
   keydown[e.keyCode] = false;
 });
 
+document.addEventListener('mousedown', (e) => {
+  isShooting = true;
+});
+document.addEventListener('mouseup', (e) => {
+  isShooting = false;
+});
+
 let prevTime = performance.now();
 function animate(){
   requestAnimationFrame(animate);
@@ -47,7 +57,35 @@ function animate(){
   let delta = ( time - prevTime ) / 1000;
   prevTime = time;
   renderer.render(scene, camera);
-  updateCameraAndGun({ movementX: 0, movementY: 0 });
+
+  if (isShooting && hasBullet) {
+    console.log("shoot");
+
+    let bullet = new THREE.Mesh(
+      new THREE.SphereGeometry(0.02, 8, 8),
+      new THREE.MeshBasicMaterial({ color: 0xffffAA }),
+    );
+    bullet.position.set(
+      meshes.gun.position.x,
+      meshes.gun.position.y + 0.15,
+      meshes.gun.position.z,
+    );
+    bullet.velocity = new THREE.Vector3(
+      -Math.sin(camera.rotation.y),
+      0,
+      Math.cos(camera.rotation.y),
+    );
+    bullet.alive = true;
+    bullets.push(bullet);
+    setTimeout(() => {
+      bullet.alive = false;
+      scene.remove(bullet);
+    }, 600);
+    scene.add(bullet);
+    hasBullet = false;
+  }
+  updateBullets();
+  updateCameraAndGun();
   camera.position.y += speed.y * delta;
   if (camera.position.y > 2) {
     speed.y += delta * (-50);
@@ -106,4 +144,17 @@ function updateCameraAndGun(event = { movementX: 0, movementY: 0 }) {
       camera.rotation.z,
     );
   }
-};
+}
+function updateBullets() {
+  bullets.forEach((bullet, index) => {
+    console.log(bullet);
+    if (!bullet.alive) {
+      bullets.splice(index, 1);
+      return;
+    }
+    bullet.position.add(bullet.velocity);
+  });
+}
+setInterval(() => {
+  hasBullet = true;
+}, 100);
