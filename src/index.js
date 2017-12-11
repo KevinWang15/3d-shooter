@@ -44,9 +44,12 @@ document.addEventListener('keyup', (e) => {
 });
 
 document.addEventListener('mousedown', (e) => {
+  console.log("isShooting", true);
   isShooting = true;
 });
+
 document.addEventListener('mouseup', (e) => {
+  console.log("isShooting", false);
   isShooting = false;
 });
 
@@ -83,12 +86,8 @@ function updateCameraAndGun(event = { movementX: 0, movementY: 0 }) {
   }
 }
 function updateBullets() {
+  bullets = bullets.filter(_ => _.alive);
   bullets.forEach((bullet, index) => {
-    console.log(bullet);
-    if (!bullet.alive) {
-      bullets.splice(index, 1);
-      return;
-    }
     bullet.position.add(bullet.velocity);
   });
 }
@@ -115,7 +114,7 @@ function shootBullet() {
   }, 600);
   scene.add(bullet);
   hasBullet = false;
-};
+}
 function updatePlayerPos(delta) {
   camera.position.y += speed.y * delta;
   if (camera.position.y > 2) {
