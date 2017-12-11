@@ -33,6 +33,7 @@ function animate(){
   let delta = ( time - prevTime ) / 1000;
   prevTime = time;
   renderer.render(scene, camera);
+  updateCameraAndGun({movementX:0,movementY:0})
 }
 
 function updateCameraAndGun(event) {
