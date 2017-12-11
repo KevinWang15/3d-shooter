@@ -51,41 +51,72 @@ document.addEventListener('mouseup', (e) => {
 });
 
 let prevTime = performance.now();
-function animate(){
+function animate() {
   requestAnimationFrame(animate);
   let time = performance.now();
   let delta = ( time - prevTime ) / 1000;
   prevTime = time;
   renderer.render(scene, camera);
-
-  if (isShooting && hasBullet) {
-    console.log("shoot");
-
-    let bullet = new THREE.Mesh(
-      new THREE.SphereGeometry(0.02, 8, 8),
-      new THREE.MeshBasicMaterial({ color: 0xffffAA }),
-    );
-    bullet.position.set(
-      meshes.gun.position.x,
-      meshes.gun.position.y + 0.15,
-      meshes.gun.position.z,
-    );
-    bullet.velocity = new THREE.Vector3(
-      -Math.sin(camera.rotation.y),
-      0,
-      Math.cos(camera.rotation.y),
-    );
-    bullet.alive = true;
-    bullets.push(bullet);
-    setTimeout(() => {
-      bullet.alive = false;
-      scene.remove(bullet);
-    }, 600);
-    scene.add(bullet);
-    hasBullet = false;
-  }
+  if (isShooting && hasBullet)
+    shootBullet();
   updateBullets();
   updateCameraAndGun();
+  updatePlayerPos(delta);
+  updateCameraAndGun()
+}
+
+function updateCameraAndGun(event = { movementX: 0, movementY: 0 }) {
+  camera.rotation.y += event.movementX * 0.002;
+  if (meshes.gun) {
+    let time = Date.now() * 0.0005;
+    meshes.gun.position.set(
+      camera.position.x - Math.sin(camera.rotation.y + Math.PI / 6) * 0.75,
+      camera.position.y - 0.5 + Math.sin(time * 4 + camera.position.x + camera.position.z) * 0.05,
+      camera.position.z + Math.cos(camera.rotation.y + Math.PI / 6) * 0.75,
+    );
+
+    meshes.gun.rotation.set(
+      camera.rotation.x,
+      camera.rotation.y - Math.PI,
+      camera.rotation.z,
+    );
+  }
+}
+function updateBullets() {
+  bullets.forEach((bullet, index) => {
+    console.log(bullet);
+    if (!bullet.alive) {
+      bullets.splice(index, 1);
+      return;
+    }
+    bullet.position.add(bullet.velocity);
+  });
+}
+function shootBullet() {
+  let bullet = new THREE.Mesh(
+    new THREE.SphereGeometry(0.02, 8, 8),
+    new THREE.MeshBasicMaterial({ color: 0xffffAA }),
+  );
+  bullet.position.set(
+    meshes.gun.position.x,
+    meshes.gun.position.y + 0.15,
+    meshes.gun.position.z,
+  );
+  bullet.velocity = new THREE.Vector3(
+    -Math.sin(camera.rotation.y),
+    0,
+    Math.cos(camera.rotation.y),
+  );
+  bullet.alive = true;
+  bullets.push(bullet);
+  setTimeout(() => {
+    bullet.alive = false;
+    scene.remove(bullet);
+  }, 600);
+  scene.add(bullet);
+  hasBullet = false;
+};
+function updatePlayerPos(delta) {
   camera.position.y += speed.y * delta;
   if (camera.position.y > 2) {
     speed.y += delta * (-50);
@@ -125,36 +156,7 @@ function animate(){
     let normalizedz = inertia.z / sumxz;
     camera.position.z += normalizedz;
   }
-  updateCameraAndGun()
-}
-
-function updateCameraAndGun(event = { movementX: 0, movementY: 0 }) {
-  camera.rotation.y += event.movementX * 0.002;
-  if (meshes.gun) {
-    let time = Date.now() * 0.0005;
-    meshes.gun.position.set(
-      camera.position.x - Math.sin(camera.rotation.y + Math.PI / 6) * 0.75,
-      camera.position.y - 0.5 + Math.sin(time * 4 + camera.position.x + camera.position.z) * 0.05,
-      camera.position.z + Math.cos(camera.rotation.y + Math.PI / 6) * 0.75,
-    );
-
-    meshes.gun.rotation.set(
-      camera.rotation.x,
-      camera.rotation.y - Math.PI,
-      camera.rotation.z,
-    );
-  }
-}
-function updateBullets() {
-  bullets.forEach((bullet, index) => {
-    console.log(bullet);
-    if (!bullet.alive) {
-      bullets.splice(index, 1);
-      return;
-    }
-    bullet.position.add(bullet.velocity);
-  });
-}
+};
 setInterval(() => {
   hasBullet = true;
 }, 100);
