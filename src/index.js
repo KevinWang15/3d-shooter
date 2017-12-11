@@ -17,6 +17,8 @@ models.load(loadingManager).then(function () {
   document.body.appendChild(renderer.domElement);
   scene.add(controls.getObject());
   camera.lookAt(meshes["tree1"].position);
+  camera.position.y += 2;
+  console.log(camera.rotation);
   renderer.domElement.onclick = () => {
     renderer.domElement.requestPointerLock()
   };
