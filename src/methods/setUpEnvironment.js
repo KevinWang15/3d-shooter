@@ -31,6 +31,12 @@ export default function setUpEnvironment(scene) {
   scene.add(meshes["tree1"]);
   scene.add(meshes["tree2"]);
   scene.add(meshes["tree3"]);
+
+  meshes['male1'] = models.models.male.clone();
+  meshes['male1'].scale.set(.015,.015,.015);
+  meshes['male1'].position.set(0, 0, 3);
+  scene.add(meshes["male1"]);
+
 }
 
 export { meshes };

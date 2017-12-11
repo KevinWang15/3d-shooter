@@ -3,26 +3,44 @@ const MTLLoader = require('three-mtl-loader');
 import * as THREE from "three";
 OBJLoader(THREE);
 let mtlLoader = new MTLLoader();
-let modelsSrc = [{ name: "tree", path: "models/tree.obj", mtl: "models/tree.mtl", mesh: null }];
+let modelsSrc = [
+  { name: "tree", path: "models/tree.obj", mtl: "models/tree.mtl", mesh: null, type: "obj" },
+  { name: "male", path: "models/male.json", mesh: null, type: "json" },
+];
 let models = {};
 export function load(loadingManager) {
-  modelsSrc.forEach(model => {
-    let objLoader = new THREE.OBJLoader(loadingManager);
-    mtlLoader.load(model.mtl, function (matl) {
-      matl.preload();
+  let loadPromises = [];
 
-      objLoader.setMaterials(matl);
-      objLoader.load(model.path, function (mesh) {
-        mesh.traverse(function (node) {
-          if (node instanceof THREE.Mesh) {
-            node.castShadow = true;
-            node.receiveShadow = true;
-          }
+  modelsSrc.forEach(model => {
+    loadPromises.push(new Promise(res => {
+      if (model.type === 'obj') {
+        let objLoader = new THREE.OBJLoader(loadingManager);
+        mtlLoader.setTexturePath('models/');
+        mtlLoader.load(model.mtl, function (matl) {
+          matl.preload();
+          objLoader.setMaterials(matl);
+          objLoader.load(model.path, function (mesh) {
+            mesh.traverse(function (node) {
+              if (node instanceof THREE.Mesh) {
+                node.castShadow = true;
+                node.receiveShadow = true;
+              }
+            });
+            models[model.name] = { mesh };
+            res();
+          });
         });
-        models[model.name] = { mesh };
-      });
-    });
+      } else if (model.type === 'json') {
+        let loader = new THREE.ObjectLoader(loadingManager);
+        loader.load(model.path, function (obj) {
+          models[model.name] = obj;
+          res();
+        });
+      }
+    }));
   });
+
+  return Promise.all(loadPromises);
 }
 
 export { models };
