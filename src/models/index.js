@@ -20,13 +20,7 @@ export function load(loadingManager) {
           matl.preload();
           objLoader.setMaterials(matl);
           objLoader.load(model.path, function (mesh) {
-            mesh.traverse(function (node) {
-              if (node instanceof THREE.Mesh) {
-                node.castShadow = true;
-                node.receiveShadow = true;
-              }
-            });
-            models[model.name] = { mesh };
+            models[model.name] = mesh ;
             res();
           });
         });

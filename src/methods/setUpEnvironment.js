@@ -4,26 +4,26 @@ import * as models from "../models";
 let meshes = {};
 
 export default function setUpEnvironment(scene) {
-  let ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+  let ambientLight = new THREE.AmbientLight(0xffffff, 1.2);
   scene.add(ambientLight);
-  let light = new THREE.PointLight(0xffffff, 0.9, 18);
-  light.position.set(5, 5, -10);
+  let light = new THREE.PointLight(0xffff00, 10, 50, 3);
+  light.position.set(20, 20, -20);
   light.castShadow = true;
   light.shadow.camera.near = 0.1;
-  light.shadow.camera.far = 25;
+  light.shadow.camera.far = 200;
   scene.add(light);
 
   let meshFloor = new THREE.Mesh(
-    new THREE.PlaneGeometry(20, 20, 10, 10),
-    new THREE.MeshPhongMaterial({ color: 0xffffff }),
+    new THREE.PlaneGeometry(200, 200, 10, 10),
+    new THREE.MeshPhysicalMaterial({ color: 0x44ff00 }),
   );
   meshFloor.rotation.x -= Math.PI / 2;
   meshFloor.receiveShadow = true;
   scene.add(meshFloor);
 
-  meshes['tree1'] = models.models.tree.mesh.clone();
-  meshes['tree2'] = models.models.tree.mesh.clone();
-  meshes['tree3'] = models.models.tree.mesh.clone();
+  meshes['tree1'] = models.models.tree.clone();
+  meshes['tree2'] = models.models.tree.clone();
+  meshes['tree3'] = models.models.tree.clone();
   meshes['tree1'].position.set(0, 0, 5);
   meshes['tree2'].position.set(5, 0, 8);
   meshes['tree3'].position.set(-5, 0, 8);
