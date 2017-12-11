@@ -20,7 +20,6 @@ export default function setUpEnvironment(scene) {
   meshFloor.rotation.x -= Math.PI / 2;
   meshFloor.receiveShadow = true;
   scene.add(meshFloor);
-
   meshes['tree1'] = models.models.tree.clone();
   meshes['tree2'] = models.models.tree.clone();
   meshes['tree3'] = models.models.tree.clone();

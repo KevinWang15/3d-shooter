@@ -5,6 +5,8 @@ import "./index.css";
 
 let keydown = {};
 let speed = { x: 0.1, y: 0 };
+let inertia = { x: 0, z: 0 };
+let isJumping = false;
 let scene = new THREE.Scene();
 let camera = new THREE.PerspectiveCamera(75, 1000 / 800, 0.1, 100);
 let loadingManager = new THREE.LoadingManager();
@@ -29,6 +31,10 @@ document.addEventListener('mousemove', (e) => {
 });
 document.addEventListener('keydown', (e) => {
   keydown[e.keyCode] = true;
+  if (e.keyCode === 32) {
+    isJumping = true;
+    speed.y += 10;
+  }
 });
 document.addEventListener('keyup', (e) => {
   keydown[e.keyCode] = false;
@@ -42,26 +48,46 @@ function animate(){
   prevTime = time;
   renderer.render(scene, camera);
   updateCameraAndGun({ movementX: 0, movementY: 0 });
-
-  if (keydown[87]) { //w
-    camera.position.x -= Math.sin(camera.rotation.y) * speed.x;
-    camera.position.z -= -Math.cos(camera.rotation.y) * speed.x;
+  camera.position.y += speed.y * delta;
+  if (camera.position.y > 2) {
+    speed.y += delta * (-50);
+  } else {
+    speed.y = 0;
+    camera.position.y = 2;
+    inertia.x = 0;
+    inertia.z = 0;
+    isJumping = false;
   }
-  if (keydown[83]) { //s
-    camera.position.x -= Math.sin(camera.rotation.y) * -speed.x;
-    camera.position.z -= -Math.cos(camera.rotation.y) * -speed.x;
+  if (!isJumping) {
+    if (!keydown[32]) {
+      inertia.x = 0;
+      inertia.z = 0;
+    }
+    if (keydown[87]) { //w
+      inertia.x += -Math.sin(camera.rotation.y) * speed.x;
+      inertia.z += Math.cos(camera.rotation.y) * speed.x;
+    }
+    if (keydown[83]) { //s
+      inertia.x += -Math.sin(camera.rotation.y) * -speed.x;
+      inertia.z += Math.cos(camera.rotation.y) * -speed.x;
+    }
+    if (keydown[65]) { // a
+      inertia.x += Math.sin(camera.rotation.y + Math.PI / 2) * speed.x;
+      inertia.z += -Math.cos(camera.rotation.y + Math.PI / 2) * speed.x;
+    }
+    if (keydown[68]) { // d
+      inertia.x += Math.sin(camera.rotation.y + Math.PI / 2) * -speed.x;
+      inertia.z += -Math.cos(camera.rotation.y + Math.PI / 2) * -speed.x;
+    }
   }
-  if (keydown[65]) { // a
-    camera.position.x += Math.sin(camera.rotation.y + Math.PI / 2) * speed.x;
-    camera.position.z += -Math.cos(camera.rotation.y + Math.PI / 2) * speed.x;
+  let sumxz = Math.sqrt(inertia.x / speed.x * inertia.x / speed.x + inertia.z / speed.x * inertia.z / speed.x);
+  if (sumxz) {
+    let normalizedx = inertia.x / sumxz;
+    camera.position.x += normalizedx;
+    let normalizedz = inertia.z / sumxz;
+    camera.position.z += normalizedz;
   }
-  if (keydown[68]) { // d
-    camera.position.x += Math.sin(camera.rotation.y + Math.PI / 2) * -speed.x;
-    camera.position.z += -Math.cos(camera.rotation.y + Math.PI / 2) * -speed.x;
-  }
-  if (keydown[87] || keydown[83] || keydown[65] || keydown[68]) {
-    updateCameraAndGun()
-  }
+  updateCameraAndGun()
 }
 
 function updateCameraAndGun(event = { movementX: 0, movementY: 0 }) {
