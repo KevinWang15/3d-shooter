@@ -13,7 +13,6 @@ renderer.setSize(1000, 800);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.BasicShadowMap;
 models.load(loadingManager).then(function () {
-  console.log("setup",models.models);
   setUpEnvironment(scene);
   document.body.appendChild(renderer.domElement);
   scene.add(controls.getObject());
