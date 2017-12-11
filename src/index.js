@@ -15,29 +15,15 @@ models.load(loadingManager).then(function () {
   document.body.appendChild(renderer.domElement);
   camera.lookAt(meshes["tree1"].position);
   camera.position.y += 2;
-  console.log(camera.rotation);
   renderer.domElement.onclick = () => {
     renderer.domElement.requestPointerLock()
   };
+  updateCameraAndGun({ movementX: 0, movementY: 0 });
   animate();
 });
 
-document.addEventListener('mousemove', () => {
-  camera.rotation.y += event.movementX * 0.002;
-  if (meshes.ak) {
-    let time = Date.now() * 0.0005;
-    meshes.ak.position.set(
-      camera.position.x - Math.sin(camera.rotation.y + Math.PI / 6) * 0.75,
-      camera.position.y - 0.5 + Math.sin(time * 4 + camera.position.x + camera.position.z) * 0.05,
-      camera.position.z + Math.cos(camera.rotation.y + Math.PI / 6) * 0.75,
-    );
-
-    meshes.ak.rotation.set(
-      camera.rotation.x,
-      camera.rotation.y - Math.PI,
-      camera.rotation.z,
-    );
-  }
+document.addEventListener('mousemove', (e) => {
+  updateCameraAndGun(e);
 });
 
 let prevTime = performance.now();
@@ -48,3 +34,21 @@ function animate(){
   prevTime = time;
   renderer.render(scene, camera);
 }
+
+function updateCameraAndGun(event) {
+  camera.rotation.y += event.movementX * 0.002;
+  if (meshes.gun) {
+    let time = Date.now() * 0.0005;
+    meshes.gun.position.set(
+      camera.position.x - Math.sin(camera.rotation.y + Math.PI / 6) * 0.75,
+      camera.position.y - 0.5 + Math.sin(time * 4 + camera.position.x + camera.position.z) * 0.05,
+      camera.position.z + Math.cos(camera.rotation.y + Math.PI / 6) * 0.75,
+    );
+
+    meshes.gun.rotation.set(
+      camera.rotation.x,
+      camera.rotation.y - Math.PI,
+      camera.rotation.z,
+    );
+  }
+};

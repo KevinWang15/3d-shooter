@@ -45,10 +45,9 @@ export default function setUpEnvironment(scene) {
   scene.add(meshes["male2"]);
   scene.add(meshes["male3"]);
 
-  meshes['ak'] = models.models.ak.clone();
-  meshes['ak'].position.set(-0.3, 1.6, 0.8);
-  meshes['ak'].scale.set(.04,.04,.04);
-  scene.add(meshes["ak"]);
+  meshes['gun'] = models.models.gun.clone();
+  meshes['gun'].scale.set(.01,.01,.01);
+  scene.add(meshes["gun"]);
 
 }
 
