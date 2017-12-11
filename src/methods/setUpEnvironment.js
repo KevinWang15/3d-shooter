@@ -35,7 +35,15 @@ export default function setUpEnvironment(scene) {
   meshes['male1'] = models.models.male.clone();
   meshes['male1'].scale.set(.015,.015,.015);
   meshes['male1'].position.set(0, 0, 3);
+  meshes['male2'] = models.models.male.clone();
+  meshes['male2'].scale.set(.015,.015,.015);
+  meshes['male2'].position.set(2, 0, 4);
+  meshes['male3'] = models.models.male.clone();
+  meshes['male3'].scale.set(.015,.015,.015);
+  meshes['male3'].position.set(-2, 0, 4);
   scene.add(meshes["male1"]);
+  scene.add(meshes["male2"]);
+  scene.add(meshes["male3"]);
 
 }
 
