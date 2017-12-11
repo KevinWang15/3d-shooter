@@ -44,12 +44,10 @@ document.addEventListener('keyup', (e) => {
 });
 
 document.addEventListener('mousedown', (e) => {
-  console.log("isShooting", true);
   isShooting = true;
 });
 
 document.addEventListener('mouseup', (e) => {
-  console.log("isShooting", false);
   isShooting = false;
 });
 
@@ -63,9 +61,8 @@ function animate() {
   if (isShooting && hasBullet)
     shootBullet();
   updateBullets();
-  updateCameraAndGun();
   updatePlayerPos(delta);
-  updateCameraAndGun()
+  updateCameraAndGun();
 }
 
 function updateCameraAndGun(event = { movementX: 0, movementY: 0 }) {
@@ -80,7 +77,7 @@ function updateCameraAndGun(event = { movementX: 0, movementY: 0 }) {
 
     meshes.gun.rotation.set(
       camera.rotation.x,
-      camera.rotation.y - Math.PI,
+      camera.rotation.y,
       camera.rotation.z,
     );
   }
@@ -96,10 +93,11 @@ function shootBullet() {
     new THREE.SphereGeometry(0.02, 8, 8),
     new THREE.MeshBasicMaterial({ color: 0xffffAA }),
   );
+  let distance = 1.8;
   bullet.position.set(
-    meshes.gun.position.x,
-    meshes.gun.position.y + 0.15,
-    meshes.gun.position.z,
+    meshes.gun.position.x + Math.sin(camera.rotation.y) * distance,
+    meshes.gun.position.y + 0.20,
+    meshes.gun.position.z - Math.cos(camera.rotation.y) * distance,
   );
   bullet.velocity = new THREE.Vector3(
     -Math.sin(camera.rotation.y),
