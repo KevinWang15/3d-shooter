@@ -1,11 +1,11 @@
+import PointerLockControls from "./lib/PointerLockControls";
 import * as three from "three";
 import * as models from "./models";
 import "./index.css";
 
 let scene = new three.Scene();
-let camera = new three.PerspectiveCamera(90, 1000 / 800, 0.1, 100);
-camera.position.y += 0.2;
-let clock = new three.Clock();
+let camera = new three.PerspectiveCamera(75, 1000 / 800, 0.1, 100);
+let controls = new PointerLockControls(camera);
 let loadingManager = new three.LoadingManager();
 let meshes = {};
 let renderer = new three.WebGLRenderer();
@@ -39,18 +39,28 @@ loadingManager.onLoad = function () {
   scene.add(meshes["tree1"]);
   scene.add(meshes["tree2"]);
   scene.add(meshes["tree3"]);
-  camera.lookAt(meshes["tree1"].position);
 
   renderer.setSize(1000, 800);
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = three.BasicShadowMap;
   document.body.appendChild(renderer.domElement);
+  scene.add(controls.getObject());
+  camera.lookAt(meshes["tree1"].position);
+  renderer.domElement.onclick = () => {
+    renderer.domElement.requestPointerLock()
+  };
   animate();
 };
 models.load(loadingManager);
 
+let prevTime = performance.now();
+
 function animate(){
   requestAnimationFrame(animate);
-  let delta = clock.getDelta();
+
+  let time = performance.now();
+  let delta = ( time - prevTime ) / 1000;
+  prevTime = time;
+
   renderer.render(scene, camera);
 }
